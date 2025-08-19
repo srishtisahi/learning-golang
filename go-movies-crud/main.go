@@ -1,4 +1,6 @@
-package gomoviescrud
+// package gomoviescrud
+// this got added by vscode for no reason
+// go requires exactly one package declaration per file
 
 package main
 
@@ -16,16 +18,16 @@ import (
 // structs will be sent to postman as json
 
 type Movie struct {
-	ID string `json:"id"`
-	Isbn string `json: "isbn"` // unique movie id
-	Title string `json: "title"`
-	Director *Director `json: "director"` // pointer to director struct
+	ID string `json:"id"` // no spacing around :
+	Isbn string `json:"isbn"` // unique movie id
+	Title string `json:"title"`
+	Director *Director `json:"director"` // pointer to director struct
 }
 
 // every movie has a director - associated to movie struct 
 type Director struct {
-	Firstname string `json: "firstname"`
-	Lastname string `json: "lastname"`
+	Firstname string `json:"firstname"`
+	Lastname string `json:"lastname"`
 }
 
 var movies []Movie // slice of movie structs
@@ -48,16 +50,21 @@ func deleteMovie(w http.ResponseWriter, r *http.Request) {
 }
 
 func getMovie(w http.ResponseWriter, r *http.Request) {
-	w.Header.Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json") // don't forget () after header
 	params := mux.Vars(r) // get request parameters with this mux function
-	for _, item :=  
+	for _, item :=  range movies {
+		if item.ID == params["id"] {
+			json.NewEncoder(w).Encode(item)
+			return
+		}
+	}
 }
 
 func main() {
 	r := mux.NewRouter() // function from gorilla mux library
 
-	movies = append(movies, Movies(ID: "1", Isbn: "438227", Title: "Movie One", Director: &Director{Firstname: "John", Lastname: "Doe"}))
-	movies = append(movies, Movie(ID: "2", Isbn: "45455", Title: "Movie Two", Director: &Director {Firstname: "Steve", Lastname: "Smith"}))
+	movies = append(movies, Movie{ID: "1", Isbn: "438227", Title: "Movie One", Director: &Director{Firstname: "John", Lastname: "Doe"}})
+	movies = append(movies, Movie{ID: "2", Isbn: "45455", Title: "Movie Two", Director: &Director {Firstname: "Steve", Lastname: "Smith"}})
 
 	// we will have 5 functions as per table in project-notes.md
 	r.HandleFunc("/movies", getMovies).Methods("GET")
@@ -79,7 +86,7 @@ func createMovie(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(movie)
 }
 
-func updateMovie() {
+func updateMovie(w http.ResponseWriter, r *http.Request) {
 	// set json content type
 	w.Header().Set("Content-Type", "application/json")
 
@@ -93,7 +100,13 @@ func updateMovie() {
 	// add a new movie - the one that you send in the body of postman
 	for index, item := range movies {
 		if item.ID == params["id"] {
-			movies = append(movies[:index], movies[index+1]...)
+			movies = append(movies[:index], movies[index+1:]...)
+			var movie Movie
+			_ = json.NewDecoder(r.Body).Decode(&movie) // raw http request body json is decoded and fills the go struct movie
+			movie.ID = params["id"]
+			movies = append(movies, movie)
+			json.NewEncoder(w).Encode(movie)
+			return
 		}
 	}
 

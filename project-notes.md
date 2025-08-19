@@ -113,4 +113,17 @@ readme preview in vscode cmd(⌘) + shift + v
 
 ### golang syntax
 
+#### := vs = when to use which
+
 use `:=` for declaring and initializing new variables, and `=` for assigning values to already declared variables.
+
+#### append to a slice
+
+to append to a slice (list) in go  
+use: slice = append(slice, newElement)  
+for example: numbers = append(numbers, 4)
+
+the general syntax is: newSlice := append(oldSlice, elements...)  
+and when joining two slices: newSlice := append(slice1, slice2...)
+
+the ... is used to "unpack" a slice and pass its elements as separate arguments—for example, when appending all elements from one slice into another
