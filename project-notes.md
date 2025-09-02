@@ -127,3 +127,19 @@ the general syntax is: newSlice := append(oldSlice, elements...)
 and when joining two slices: newSlice := append(slice1, slice2...)
 
 the ... is used to "unpack" a slice and pass its elements as separate arguments—for example, when appending all elements from one slice into another
+
+---
+
+### modules and packages
+
+a go module is a collection of packages that are released together
+
+third party modules have remote url paths as prefixes and are imported like
+
+> module github.com/x/tools
+
+however system packages don't need this github prefix
+
+ignore $gopath, it's outdated, and don't put your code in it
+
+---
